@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    p{
+        font-size: 200%;
+
+    }
+    table, th, td {
+        border: 1px solid black;
+    }
+</style>
+<body>
+<p id="Code"></p>
+
+
+<table>
+    <tr id ="HammingCode">
+
+    </tr>
+    <tr id = "ColNumber">
+
+    </tr>
+</table>
+
+
+8bit code: <input id="hc" type="text" name="bits" value="">
+<button onclick="f1()">Hamming Code</button>
+<script>
+
+    var a = [];
+    var array= [];
+    var aColnum= [];
+    var j = 0;
+    function f1() {
+        a = document.getElementById("hc").value;
+        if(a.length == 8) {
+            document.getElementById("Code").innerHTML = "Code: " + a;
+            j = 0;
+            for (var i = 0; i < 12; i++) {
+                if (i == 0) {
+                    array[i] = "<th style='background-color: red;'>" + (a[0] ^ a[1] ^ a[3] ^ a[4] ^ a[6]) +"</th>";
+                    aColnum[i] = "<th style='background-color: red;'>hc"+i+"</th>";
+                } else if (i == 1) {
+                    array[i] =  "<th style='background-color: red;'>" + (a[0] ^ a[2] ^ a[3] ^ a[5] ^ a[6]) +"</th>";
+                    aColnum[i] = "<th style='background-color: red;'>hc"+i+"</th>";
+                } else if (i == 3) {
+                    array[i] = "<th style='background-color: red;'>" + (a[1] ^ a[2] ^ a[7] ^ a[7]) +"</th>";
+                    aColnum[i] = "<th style='background-color: red;'>hc"+i+"</th>";
+                } else if (i == 7) {
+                    array[i] =  "<th style='background-color: red;'>" +( a[4] ^ a[5] ^ a[1] ^ a[7])+"</th>";
+                    aColnum[i] = "<th style='background-color: red;'>hc"+i+"</th>";
+                } else {
+                    array[i] = "<th style='background-color: green;'>" + a[j]+"</th>";
+                    aColnum[i] = "<th style='background-color: green;'>c"+i+"</th>";
+                    j++;
+                }
+            }
+            document.getElementById("HammingCode").innerHTML = "Hamming Code: "+ array;
+            document.getElementById("ColNumber").innerHTML = "Col Number: "+ aColnum;
+        }else{
+            document.getElementById("Code").innerHTML ="kod musi miec 8 znaków";
+            document.getElementById("HammingCode").innerHTML = "";
+            document.getElementById("ColNumb").innerHTML = "";
+        }
+    }
+</script>
+
+</body>
+</html>
