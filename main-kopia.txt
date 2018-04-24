@@ -1,0 +1,85 @@
+(() => {
+
+    // ...
+
+    // num. of parity bit.
+    // 2^p >= m + p + 1;
+    let get_num_parity_bit = (msg = '0') => {
+        for (let p = 0; p < msg.length + 2; p++)
+            if (Math.pow(2, p) >= msg.length + p + 1)
+                return p;
+    };
+
+    //
+    let hamming_len = (msg = '0') => msg.length + get_num_parity_bit(msg);
+
+    // 
+    let IsPowerOfTwo = (x) => (x != 0) && ((x & (x - 1)) == 0);
+
+    // 
+    let hamming_code = (msg) => {
+        let tmp = msg.split('');
+        let code = [];
+        for (let i = 1; i < hamming_len(msg) + 1; i++) {
+            if (IsPowerOfTwo(i)) {
+                let p = tmp.filter(x => +x == 1).length % 2 == 0 ? 0 : 1;
+                // code.push('' + p);
+                code.push(p);
+            } else {
+                code.push(+tmp.shift());
+            }
+        }
+        return code;
+    };
+
+    // 
+    let check_hamming_code = (msg = []) => {
+        let tmp = [...msg], parity = [];
+        for (let i = 0; i < msg.length; i++) {
+            if (IsPowerOfTwo(i + 1)) {
+                console.log(`${i} ) ${i + 1} --> ${true}`);
+                console.log('--------------------------------')
+                parity.push(msg[i]);
+                let p = i + 1, ind = 0;
+                console.log('len ', tmp.length)
+                console.log('p ', p)
+                tmp.filter((d, j) => {
+                    // console.log('j ', j, ' ,p ', p, ',', ind)
+                    if (ind != p) {
+                        console.log('to check ',j)
+                        ind ++;
+                    } else {
+                        ind --;
+                        // console.log('no check ', j)
+                    }
+                })
+            }
+            // else {
+            //     console.log(`${i} ) ${i + 1} --> ${false}`);
+            // }
+
+            tmp.shift();
+        }
+
+        console.log(parity)
+    }
+
+
+    // console.log(hamming_code('0'))
+    // console.log(hamming_code('1'))
+    // console.log(hamming_code('00'))
+    // console.log(hamming_code('01'))
+    // console.log(hamming_code('10'))
+    // console.log(hamming_code('001'))
+    // console.log(hamming_code('010'))
+    // console.log(hamming_code('011'))
+    // console.log(hamming_code('100'))
+    // console.log(hamming_code('101'))
+    // console.log(hamming_code('110'))
+    // console.log(hamming_code('111'))
+
+    let msg = hamming_code('1001');
+    console.log(msg)
+    check_hamming_code(msg);
+
+})();
