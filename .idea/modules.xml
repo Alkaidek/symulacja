@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ECCwithHamming.iml" filepath="$PROJECT_DIR$/.idea/ECCwithHamming.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/hamming-code.iml" filepath="$PROJECT_DIR$/.idea/hamming-code.iml" />
     </modules>
   </component>
 </project>
