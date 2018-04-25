@@ -19,7 +19,8 @@ export class HcRamComponent implements OnInit {
   }
   f1(val) {
     this.value = val;
-    console.log(this.value);
+    if (this.value.length === 8) {
+      console.log(this.value);
       for (let h = 0; h < 8; h++) {
         this.a[h] = +this.value[h];
       }
@@ -29,24 +30,24 @@ export class HcRamComponent implements OnInit {
         this.j = 0;
         for (let i = 0; i < 12; i++) {
           if (i === 0) {
-            this.array[i] = '<th id="ch' + i + '" style="background-color: red;">' + ( this.a[0] ^ this.a[1] ^ this.a[3] ^ this.a[4] ^ this.a[6] ) + '</th>';
-            this.HammingArray[i] =  +( this.a[0] ^ this.a[1] ^ this.a[3] ^ this.a[4] ^ this.a[6] );
-            this.aColnum[i] = '<th  id="hc' + i + '" style="background-color: red;">hc' + i + '</th>';
+            this.array[i] = '<th id="ch' + i + '" style="background-color: yellow;">' + (this.a[0] ^ this.a[1] ^ this.a[3] ^ this.a[4] ^ this.a[6]) + '</th>';
+            this.HammingArray[i] = +(this.a[0] ^ this.a[1] ^ this.a[3] ^ this.a[4] ^ this.a[6]);
+            this.aColnum[i] = '<th  id="hc' + i + '" style="background-color: yellow;">hc' + i + '</th>';
           } else if (i === 1) {
-            this.array[i] = '<th id="ch' + i + '" style="background-color: red;">' + ( this.a[0] ^ this.a[2] ^ this.a[3] ^ this.a[5] ^ this.a[6]) + '</th>';
-            this.HammingArray[i] = +( this.a[0] ^ this.a[2] ^ this.a[3] ^ this.a[5] ^ this.a[6]);
-            this.aColnum[i] = '<th id="hc' + i + '" style="background-color: red;">hc' + i + '</th>';
+            this.array[i] = '<th id="ch' + i + '" style="background-color: yellow;">' + (this.a[0] ^ this.a[2] ^ this.a[3] ^ this.a[5] ^ this.a[6]) + '</th>';
+            this.HammingArray[i] = +(this.a[0] ^ this.a[2] ^ this.a[3] ^ this.a[5] ^ this.a[6]);
+            this.aColnum[i] = '<th id="hc' + i + '" style="background-color: yellow;">hc' + i + '</th>';
           } else if (i === 3) {
-            this.array[i] = '<th id="ch' + i + '" style="background-color: red;">' + ( this.a[1] ^ this.a[2] ^ this.a[3] ^ this.a[7] ) + '</th>';
-            this.HammingArray[i] = +( this.a[1] ^ this.a[2] ^ this.a[3] ^ this.a[7] );
-            this.aColnum[i] = '<th id="hc' + i + '"style="background-color: red;">hc' + i + '</th>';
+            this.array[i] = '<th id="ch' + i + '" style="background-color: yellow;">' + (this.a[1] ^ this.a[2] ^ this.a[3] ^ this.a[7]) + '</th>';
+            this.HammingArray[i] = +(this.a[1] ^ this.a[2] ^ this.a[3] ^ this.a[7]);
+            this.aColnum[i] = '<th id="hc' + i + '"style="background-color: yellow;">hc' + i + '</th>';
           } else if (i === 7) {
-            this.array[i] = '<th id="ch' + i + '"style="background-color: red;">' + ( this.a[4] ^ this.a[5] ^ this.a[6] ^ this.a[7]) + '</th>';
-            this.HammingArray[i] = +( this.a[4] ^ this.a[5] ^ this.a[6] ^ this.a[7]);
-            this.aColnum[i] = '<th id="hc' + i + '"style="background-color: red;">hc' + i + '</th>';
+            this.array[i] = '<th id="ch' + i + '"style="background-color: yellow;">' + (this.a[4] ^ this.a[5] ^ this.a[6] ^ this.a[7]) + '</th>';
+            this.HammingArray[i] = +(this.a[4] ^ this.a[5] ^ this.a[6] ^ this.a[7]);
+            this.aColnum[i] = '<th id="hc' + i + '"style="background-color: yellow;">hc' + i + '</th>';
           } else {
-            this.array[i] = '<th id="ch' + i + '"style="background-color: green;">' + ( this.a[this.j] ) + '</th>';
-            this.HammingArray[i] = +( this.a[this.j] );
+            this.array[i] = '<th id="ch' + i + '"style="background-color: green;">' + (this.a[this.j]) + '</th>';
+            this.HammingArray[i] = +(this.a[this.j]);
             console.log(this.a[1]);
             this.aColnum[i] = '<th id="hc' + i + '"style="background-color: green;">c' + i + '</th>';
             this.j++;
@@ -60,6 +61,9 @@ export class HcRamComponent implements OnInit {
         document.getElementById('HammingCode').innerHTML = '';
         document.getElementById('ColNumber').innerHTML = '';
       }
+    } else {
+      alert('Długość kodu musi mieć 8 znaków!');
+    }
   }
   checkHammingCode() {
     let sum = 0;
@@ -79,8 +83,8 @@ export class HcRamComponent implements OnInit {
     if(sum !== 0) {
       console.log('bład na: c' + (sum - 1));
       alert('bład na: c' + (sum - 1))
-      document.getElementById('ch' + (sum - 1) + '').style.backgroundColor = 'blue';
-      document.getElementById('hc' + (sum - 1) + '').style.backgroundColor = 'blue';
+      document.getElementById('ch' + (sum - 1) + '').style.backgroundColor = 'red';
+      document.getElementById('hc' + (sum - 1) + '').style.backgroundColor = 'red';
     } else {
       alert('brak błędu');
     }
@@ -90,6 +94,7 @@ export class HcRamComponent implements OnInit {
     console.log(this.HammingArray);
     for (let h = 0; h < 12; h++) {
       this.HammingArray[h] = +val[h];
+      document.getElementById('ch' + h + '').innerText = val[h];
     }
     console.log(this.HammingArray);
   }
