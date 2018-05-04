@@ -1,0 +1,22 @@
+<div>
+  <p id="Code"></p>
+
+
+  <table>
+    <tr id ="HammingCode">
+
+    </tr>
+    <tr id = "ColNumber">
+
+    </tr>
+  </table>
+
+
+  8bit code: <input id="hc" type="text" name="bits" #titleInput/>
+  <button id="b1" (click)="f1(titleInput.value)"><span>Hamming Code</span></button>
+
+  <button (click)="checkHammingCode()">Check Hamming Code</button>
+  <br>
+  array: <input type="text" name="bits" #caValue/>
+  <button (click)="changeArray(caValue.value)">Change Array</button>
+</div>
