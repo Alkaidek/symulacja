@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import {forEach} from '@angular/router/src/utils/collection';
-
 @Component({
-  selector: 'ham-hc-ram',
+  selector: 'ram-hc-ram',
   templateUrl: './hc-ram.component.html',
   styleUrls: ['./hc-ram.component.css']
 })
@@ -89,7 +86,7 @@ export class HcRamComponent implements OnInit {
       alert('brak błędu');
     }
   }
-  changeArray(val){
+  changeArray(val) {
     console.log('val:' + val);
     console.log(this.HammingArray);
     for (let h = 0; h < 12; h++) {

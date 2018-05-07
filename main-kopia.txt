@@ -1,7 +1,6 @@
 (() => {
 
     // ...
-
     // num. of parity bit.
     // 2^p >= m + p + 1;
     let get_num_parity_bit = (msg = '0') => {
@@ -14,72 +13,91 @@
     let hamming_len = (msg = '0') => msg.length + get_num_parity_bit(msg);
 
     // 
-    let IsPowerOfTwo = (x) => (x != 0) && ((x & (x - 1)) == 0);
+    let IsPowerOfTwo = (x = 0) => (x != 0) && ((x & (x - 1)) == 0);
 
-    // 
-    let hamming_code = (msg) => {
-        let tmp = msg.split('');
-        let code = [];
+
+    let hamming_code = (msg = '') => {
+        let hamming_code = []
+            , tmp_msg = []
+            , parity = []
+            , tmp = msg.split('')
+            , parity_table = make_parity_table(get_num_parity_bit(msg), hamming_len(msg));
+        // make array ...
         for (let i = 1; i < hamming_len(msg) + 1; i++) {
-            if (IsPowerOfTwo(i)) {
-                let p = tmp.filter(x => +x == 1).length % 2 == 0 ? 0 : 1;
-                // code.push('' + p);
-                code.push(p);
-            } else {
-                code.push(+tmp.shift());
+            if (IsPowerOfTwo(i))
+                tmp_msg.push(0);
+            else {
+                tmp_msg.push(+tmp.shift());
             }
         }
-        return code;
+
+        // make parity ...
+        for (let i in Object.keys(parity_table)) {
+            let p = parity_table[Math.pow(2, i)].filter(d => tmp_msg[d - 1] == 1).length % 2 == 0 ? 0 : 1;
+            parity.push(p);
+        }
+        console.log(parity)
+
+        // make hamming code ...
+        tmp = msg.split('');
+        for (let i = 1; i < hamming_len(msg) + 1; i++) {
+            if (IsPowerOfTwo(i))
+                hamming_code.push(parity.shift());
+            else {
+                hamming_code.push(+tmp.shift());
+            }
+        }
+
+        return hamming_code;
     };
 
     // 
-    let check_hamming_code = (msg = []) => {
-        let tmp = [...msg], parity = [];
-        for (let i = 0; i < msg.length; i++) {
-            if (IsPowerOfTwo(i + 1)) {
-                console.log(`${i} ) ${i + 1} --> ${true}`);
-                console.log('--------------------------------')
-                parity.push(msg[i]);
-                let p = i + 1, ind = 0;
-                console.log('len ', tmp.length)
-                console.log('p ', p)
-                tmp.filter((d, j) => {
-                    // console.log('j ', j, ' ,p ', p, ',', ind)
-                    if (ind != p) {
-                        console.log('to check ',j)
-                        ind ++;
-                    } else {
-                        ind --;
-                        // console.log('no check ', j)
+    let make_parity_table = (parity_num = 0, ham_msg_len = 0) => {
+        let parity_list = {};
+        for (let i = 0; i < parity_num; i++) {
+            let smallStep = Math.pow(2, i);
+            let bigStep = smallStep * 2;
+            let start = smallStep, checkPos = start;
+            parity_list[`${smallStep}`] = [];
+            while (true) {
+                for (let k = start; k <= start + smallStep - 1; k++) {
+                    checkPos = k;
+                    if (k > ham_msg_len) {
+                        break;
                     }
-                })
+                    parity_list[`${smallStep}`].push(checkPos);
+                }
+                if (checkPos > ham_msg_len) {
+                    break;
+                } else {
+                    start = start + bigStep;
+                }
             }
-            // else {
-            //     console.log(`${i} ) ${i + 1} --> ${false}`);
-            // }
-
-            tmp.shift();
         }
+        return parity_list;
+    };
 
-        console.log(parity)
+    // 
+    let check_hamming_code = (msg = [], parity_table) => {
+        let parity = [];
+
+        for (let i in Object.keys(parity_table)) {
+            let p = parity_table[Math.pow(2, i)];
+            p.shift(); // first one is the parity bit and we don't know, so we are checking !!
+            p = p.filter(d => msg[d - 1] == 1).length % 2 == 0 ? 0 : 1;
+            parity.push(p);
+        }
+        return parity;
     }
 
 
-    // console.log(hamming_code('0'))
-    // console.log(hamming_code('1'))
-    // console.log(hamming_code('00'))
-    // console.log(hamming_code('01'))
-    // console.log(hamming_code('10'))
-    // console.log(hamming_code('001'))
-    // console.log(hamming_code('010'))
-    // console.log(hamming_code('011'))
-    // console.log(hamming_code('100'))
-    // console.log(hamming_code('101'))
-    // console.log(hamming_code('110'))
-    // console.log(hamming_code('111'))
-
-    let msg = hamming_code('1001');
-    console.log(msg)
-    check_hamming_code(msg);
+    // let msg = '01010011';
+    let msg = '1001';
+    let hamming_msg = hamming_code(msg);
+    let parity_table = make_parity_table(get_num_parity_bit(msg), hamming_msg.length);
+    let check = check_hamming_code(hamming_msg, parity_table);
+    console.log('hamming_msg --> ' + hamming_msg)
+    console.log(parity_table)
+    console.log(check)
 
 })();

@@ -19,6 +19,7 @@ export class SimRam8Component implements OnInit {
   simulationStatus = true;
   simulationIndex = 0;
   probabilityValue;
+  errorIndex;
   ngOnInit() {
   }
   f1() {
@@ -33,7 +34,6 @@ export class SimRam8Component implements OnInit {
           this.a[h] = +this.generatedCode[h];
         }
         if (this.a.length === 8) {
-          document.getElementById('Code').innerHTML = 'Code: ' + this.a;
           this.j = 0;
           for (let i = 0; i < 12; i++) {
             if (i === 0) {
@@ -83,7 +83,9 @@ export class SimRam8Component implements OnInit {
     }
     if ( sum !== 0 ) {
       console.log('bład na: c' + (sum ));
-      this.simulationText = this.simulationText + 'STATUS: ERROR ON POSSITION:' + sum + '\n\n';
+      this.errorIndex = sum;
+      this.simulationText = this.simulationText + 'STATUS: ERROR ON POSSITION:' + sum + '\n';
+      this.repairHammingCode();
     } else {
       this.simulationText = this.simulationText + 'STATUS: OK \n\n';
     }
@@ -128,5 +130,15 @@ export class SimRam8Component implements OnInit {
   generateProbability() {
     this.probabilityValue = Math.floor(Math.random() * 100 + 1);
     console.log('probability' + this.probabilityValue);
+  }
+  repairHammingCode(){
+    if ( this.HammingArray[(this.errorIndex - 1)] === 1) {
+      this.HammingArray[(this.errorIndex - 1)] = 0;
+    } else {
+      this.HammingArray[(this.errorIndex - 1)] = 1;
+    }
+    this.arrayTostring();
+    this.simulationText = this.simulationText + 'STATUS: HAMMING CODE HAS BEEN REPAIRED:' + this.codeTextHamming +   ' \n';
+    this.checkHammingCode();
   }
 }
