@@ -6,11 +6,20 @@
 
 
 </div>
-<h1>Simulation Logs:</h1>
-<p>{{ simulationText }}</p>
+<div class="log">
+  <h1>Simulation Logs:</h1>
+  <p>{{ simulationText }}</p>
+</div>
+<div class="simulation">
+  <div id="simulationDot" style="margin-top: 120px; margin-left: 400px;text-align: left; padding: 0; position: absolute;">
+    <img src="../assets/images/{{imagePath2}}">
+    <p>{{actualText}}</p>
+  </div>
 <button (click)="setOption(1)">Ethernet</button>
 <button (click)="setOption(2)">WI-FI</button>
 <button (click)="setOption(3)">Satelite</button>
+  <button (click)="moveAll()">move</button>
 <br />
 <img src="../assets/images/{{imagePath}}">
+</div>
 

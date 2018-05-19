@@ -31,4 +31,17 @@ input[type=text] {
   margin: 8px 0;
   box-sizing: border-box;
 }
+.log{
+  text-align: left;
+  margin:0px;
+  width:25%;
+  float:left;
+
+}
+.simulation{
+
+  width:70%;
+  float:left;
+
+}
 

@@ -9,9 +9,12 @@ export class SimRam8Component implements OnInit {
 
 
   constructor() { }
+  i = 0
   a = [];
   HammingArray = [];
   j = 0;
+  probabilityTenPercent = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  items = [10, 12, 14, 16, 19, 20, 21];
   generatedCode = [];
   codeText = '';
   simulationText = '';
@@ -27,16 +30,23 @@ export class SimRam8Component implements OnInit {
   betaLeft;
   L;
   U;
-  imagePath;
+  imagePath = 'bc.png';
+  imagePath2 = 'p1.png';
   transferTime;
   simulationTime = 0;
   transferTimeArray = [];
   simulationCodeArray = [];
   simulationHammingCodeArray = [];
+  simulationHappeningArray = [];
+  numberOfError = 0;
+  numberOfCriticalError = 0;
+  actualText = '';
+  simulationRun = true;
   ngOnInit() {
   }
   f1() {
-    while (this.simulationIndex < 1000 ) {
+    while (this.simulationIndex < 501 ) {
+      this.numberOfError = 0;
       if ( this.transferTime === 10 ) {
         this.probabilityValue = this.poissonRandomNumber(1200) + (this.simulationIndex / 5);
       } else {
@@ -48,12 +58,13 @@ export class SimRam8Component implements OnInit {
       if (this.generatedCode.length === 8) {
 
         this.simulationText = this.simulationText + 'Simulation Index: ' + this.simulationIndex + '\n';
-        const tmpTime = Math.floor(Math.random() * ((this.transferTime * 2) - this.transferTime + 1) ) + this.transferTime;
+        this.simulationText = this.simulationText +  'Generated Code: ' + this.codeText + '\n';
+        let tmpTime = Math.floor(Math.random() * ((20) - 10 + 1) ) + 10;
         this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
         this.simulationTime = this.simulationTime + tmpTime;
         this.simulationText = this.simulationText + 'SimulationTime ' + this.simulationTime / 1000 + '\n';
-        this.simulationText = this.simulationText +  'Generated Code: ' + this.codeText + '\n';
         this.simulationCodeArray[this.simulationCodeArray.length] = this.codeText;
+        this.simulationHappeningArray[this.simulationHappeningArray.length] = this.codeText;
         for (let h = 0; h < 8; h++) {
           this.a[h] = +this.generatedCode[h];
         }
@@ -74,14 +85,19 @@ export class SimRam8Component implements OnInit {
             }
 
           }
-          //console.log('Hamming Array: ' + this.HammingArray);
-          //document.getElementById('HammingCode').innerHTML = 'Hamming Code: ' + this.array;
           if (this.probabilityValue < (this.simulationIndex )  ) {
             this.generateError();
           }
-          this.simulationHammingCodeArray[this.simulationHammingCodeArray.length] = this.codeTextHamming;
           this.arrayTostring();
+          this.simulationHammingCodeArray[this.simulationHammingCodeArray.length] = this.codeTextHamming;
+          this.simulationHappeningArray[this.simulationHappeningArray.length] = this.codeTextHamming;
+
           this.simulationText = this.simulationText + 'Hamming Code: ' + this.codeTextHamming + '\n';
+          tmpTime = Math.floor(Math.random() * ((this.transferTime * 2) - this.transferTime + 1) ) + this.transferTime;
+          this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+          this.simulationTime = this.simulationTime + tmpTime;
+          //this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+          this.simulationText = this.simulationText + 'SimulationTime ' + this.simulationTime / 1000 + '\n';
           this.checkHammingCode();
         } else {
           alert('Długość kodu musi mieć 8 znaków!');
@@ -90,45 +106,56 @@ export class SimRam8Component implements OnInit {
         alert('Długość kodu musi mieć 8 znaków!');
       }
     }
-    alert('Errors amount: ' + this.errorAmount + ' out of ' + this.simulationIndex);
+    alert('Errors amount: ' + this.errorAmount + ' out of ' + this.simulationIndex + ' || critical error number: ' + this.numberOfCriticalError );
     console.log('time: ' + this.transferTimeArray);
-    console.log('code: ' + this.simulationCodeArray);
-    console.log('Hamming code: ' + this.simulationHammingCodeArray);
+    console.log('code: ' + this.simulationHappeningArray);
+   // console.log('Hamming code: ' + this.simulationHammingCodeArray);
+    console.log('Długość czasu: ' + this.transferTimeArray.length);
+    console.log('Długość zdarzeń: ' + this.simulationHappeningArray.length);
+    this.simulationArrayToString();
   }
   checkHammingCode() {
-    let sum = 0;
-    //console.log(this.HammingArray);
-    if ( this.HammingArray[0] !== ( this.HammingArray[2] ^ this.HammingArray[4] ^ this.HammingArray[6] ^ this.HammingArray[8] ^ this.HammingArray[10] ) ) {
-      sum = 1;
-    }
-    if ( this.HammingArray[1] !== ( this.HammingArray[2] ^ this.HammingArray[5] ^ this.HammingArray[6] ^ this.HammingArray[9] ^ this.HammingArray[10] ) ) {
-      sum = sum + 2;
-    }
-    if ( this.HammingArray[3] !== ( this.HammingArray[4] ^ this.HammingArray[5] ^ this.HammingArray[6] ^ this.HammingArray[11] ) ) {
-      sum = sum + 4;
-    }
-    if ( this.HammingArray[7] !== ( this.HammingArray[8] ^ this.HammingArray[9] ^ this.HammingArray[10] ^ this.HammingArray[11] ) ) {
-      sum = sum + 8;
-    }
-    if ( sum !== 0 ) {
-      //console.log('bład na: c' + (sum ));
-      this.errorIndex = sum;
-      this.simulationText = this.simulationText + 'STATUS: ERROR ON POSSITION:' + sum + '\n';
-      this.errorAmount = this.errorAmount + 1;
-      this.repairHammingCode();
-    } else {
-      this.simulationText = this.simulationText + 'STATUS: OK \n\n';
-      this.correctAmount = this.correctAmount + 1;
-    }
+      let sum = 0;
+      let tmpTime;
+      if (this.HammingArray[0] !== (this.HammingArray[2] ^ this.HammingArray[4] ^ this.HammingArray[6] ^ this.HammingArray[8] ^ this.HammingArray[10])) {
+        sum = 1;
+      }
+      if (this.HammingArray[1] !== (this.HammingArray[2] ^ this.HammingArray[5] ^ this.HammingArray[6] ^ this.HammingArray[9] ^ this.HammingArray[10])) {
+        sum = sum + 2;
+      }
+      if (this.HammingArray[3] !== (this.HammingArray[4] ^ this.HammingArray[5] ^ this.HammingArray[6] ^ this.HammingArray[11])) {
+        sum = sum + 4;
+      }
+      if (this.HammingArray[7] !== (this.HammingArray[8] ^ this.HammingArray[9] ^ this.HammingArray[10] ^ this.HammingArray[11])) {
+        sum = sum + 8;
+      }
+      if (sum !== 0) {
+        this.errorIndex = sum;
+        this.simulationText = this.simulationText + 'STATUS: ERROR ON POSSITION:' + sum + '\n';
+        this.simulationHappeningArray[this.simulationHappeningArray.length] = 'ERROR'
+        this.errorAmount = this.errorAmount + 1;
+        tmpTime = Math.floor(Math.random() * ((20) - 10 + 1)) + 10;
+        this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+        this.simulationTime = this.simulationTime + tmpTime;
+        //this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+        this.simulationText = this.simulationText + 'SimulationTime ' + this.simulationTime / 1000 + '\n';
+        this.repairHammingCode();
+      } else {
+        this.simulationText = this.simulationText + 'STATUS: OK \n';
+        this.simulationHappeningArray[this.simulationHappeningArray.length] = 'OK'
+        tmpTime = Math.floor(Math.random() * ((20) - 10 + 1)) + 10;
+        this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+        this.simulationTime = this.simulationTime + tmpTime;
+        //this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+        this.simulationText = this.simulationText + 'SimulationTime ' + this.simulationTime / 1000 + '\n\n';
+        this.correctAmount = this.correctAmount + 1;
+      }
   }
   changeArray(val) {
-    //console.log('val:' + val);
-    //console.log(this.HammingArray);
     for (let h = 0; h < 12; h++) {
       this.HammingArray[h] = +val[h];
       document.getElementById('ch' + h + '').innerText = val[h];
     }
-    //console.log(this.HammingArray);
   }
   generateCode() {
     this.codeText = '';
@@ -150,28 +177,56 @@ export class SimRam8Component implements OnInit {
   }
   generateError() {
     const index = Math.floor(Math.random() * 12);
-    //console.log('wartość: ' + this.HammingArray[index]);
     if ( this.HammingArray[index] === 1) {
       this.HammingArray[index] = 0;
     } else {
       this.HammingArray[index] = 1;
     }
-    //console.log('wartość po: ' + this.HammingArray[index]);
+    for (let i = 0; i < 12; i++) {
+      if (i !== index) {
+        const randomIndex =  Math.floor(Math.random() * 20);
+        if ( this.probabilityTenPercent[randomIndex] === 1 ) {
+          if ( this.HammingArray[i] === 1) {
+            this.HammingArray[i] = 0;
+          } else {
+            this.HammingArray[i] = 1;
+          }
+        }
+      }
+    }
   }
   generateProbability() {
     this.probabilityValue = Math.floor(Math.random() * 1000 + 1);
-    //console.log('probability' + this.probabilityValue);
     return this.probabilityValue;
   }
-  repairHammingCode(){
-    if ( this.HammingArray[(this.errorIndex - 1)] === 1) {
-      this.HammingArray[(this.errorIndex - 1)] = 0;
+  repairHammingCode() {
+    let tmpTime;
+    this.numberOfError = this.numberOfError + 1;
+    if (this.numberOfError !== 2) {
+      if (this.HammingArray[(this.errorIndex - 1)] === 1) {
+        this.HammingArray[(this.errorIndex - 1)] = 0;
+      } else {
+        this.HammingArray[(this.errorIndex - 1)] = 1;
+      }
+      this.arrayTostring();
+      this.simulationText = this.simulationText + 'STATUS: HAMMING CODE HAS BEEN REPAIRED:' + this.codeTextHamming + ' \n';
+      this.simulationHappeningArray[this.simulationHappeningArray.length] = 'REPAIRED';
+      tmpTime = Math.floor(Math.random() * ((20) - 10 + 1)) + 10;
+      this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+      this.simulationTime = this.simulationTime + tmpTime;
+      //this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+      this.simulationText = this.simulationText + 'SimulationTime ' + this.simulationTime / 1000 + '\n';
+      this.checkHammingCode();
     } else {
-      this.HammingArray[(this.errorIndex - 1)] = 1;
+      this.numberOfCriticalError = this.numberOfCriticalError + 1;
+      this.simulationHappeningArray[this.simulationHappeningArray.length] = 'CANNOT BEEN REPAIRED';
+      this.simulationText = this.simulationText + 'STATUS: HAMMING CODE CANNOT BEEN REPAIRED: \n';
+      tmpTime = Math.floor(Math.random() * ((20) - 10 + 1)) + 10;
+      this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+      this.simulationTime = this.simulationTime + tmpTime;
+     // this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
+      this.simulationText = this.simulationText + 'SimulationTime with ' + this.simulationTime / 1000 + '\n\n';
     }
-    this.arrayTostring();
-    this.simulationText = this.simulationText + 'STATUS: HAMMING CODE HAS BEEN REPAIRED:' + this.codeTextHamming +   ' \n';
-    this.checkHammingCode();
   }
   probabilityBetaLeft() {
     this.unif = Math.random();
@@ -210,4 +265,117 @@ export class SimRam8Component implements OnInit {
     this.imagePath = 'bcg' + arg1 + '.png';
     this.transferTime = arg1 * 10;
   }
+  simulationArrayToString() {
+    let textOfSimulation = '';
+    for (let i = 0; i < this.simulationHappeningArray.length; i++) {
+      textOfSimulation = textOfSimulation + ' ' + this.transferTimeArray[i] + ':' + this.simulationHappeningArray[i];
+
+    }
+    console.log(textOfSimulation);
+  }
+  move() {
+    for (this.i = 0; this.i < this.simulationHappeningArray.length; this.i++) {
+      document.getElementById('simulationDot').style.marginLeft = 400 + 'px';
+      setTimeout(() => {
+          this.movePart1(this.i);
+          this.i++;
+        },
+        1000);
+      setTimeout(() => {
+          this.movePart2(this.i);
+          this.i++;
+        },
+        1200);
+      setTimeout(() => {
+          this.movePart3();
+        },
+        1400);
+      setTimeout(() => {
+          this.movePart4(this.i);
+        },
+        1600);
+    }
+  }
+  movePart1(z) {
+   // setTimeout(function () {
+      this.actualText = this.simulationHappeningArray[z];
+      console.log(this.actualText);
+    //}, 300);
+  }
+  movePart2(z) {
+    //setTimeout(function () {
+      this.imagePath2 = 'p2.png';
+      this.actualText = this.simulationHappeningArray[z];
+   // }, 400);
+  }
+  movePart3() {
+    //setTimeout(function () {
+      document.getElementById('simulationDot').style.marginLeft = 800 + 'px';
+    //}, 500);
+  }
+  movePart4(z) {
+   // setTimeout(function () {
+      if (this.simulationHappeningArray[z] === 'OK') {
+        this.imagePath2 = 'p3.png';
+        this.actualText = this.simulationHappeningArray[z];
+
+      } else {
+        this.imagePath2 = 'p4.png';
+        this.actualText = this.simulationHappeningArray[z];
+        this.i++;
+        this.i++;
+      }
+   // }, 600);
+  }
+  moveAll() {
+    //for (let i = 0;  i < this.simulationHappeningArray.length; i++) {
+    this.actualText = '';
+    this.imagePath2 = 'p1.png';
+    document.getElementById('simulationDot').style.marginLeft = 400 + 'px';
+    setTimeout(() => {
+        this.actualText = this.simulationHappeningArray[this.i];
+        console.log(this.actualText);
+        this.i++;
+        setTimeout(() => {
+            this.imagePath2 = 'p2.png';
+            this.actualText = this.simulationHappeningArray[this.i];
+            this.i++;
+            setTimeout(() => {
+                document.getElementById('simulationDot').style.marginLeft = 800 + 'px';
+                setTimeout(() => {
+                    if (this.simulationHappeningArray[this.i] === 'OK') {
+                      this.imagePath2 = 'p3.png';
+                      this.actualText = this.simulationHappeningArray[this.i];
+                      this.i++;
+                      setTimeout(() => {
+                        if ( this.i < this.simulationHappeningArray.length ) {
+                          this.moveAll();
+                          }
+                        }, 500);
+                    } else {
+                      this.imagePath2 = 'p4.png';
+                      this.actualText = this.simulationHappeningArray[this.i];
+                      this.i++;
+                      this.i++;
+                      this.i++;
+                      setTimeout(() => {
+                        if ( this.i < this.simulationHappeningArray.length ) {
+                          this.moveAll();
+                        }
+                      }, 500);
+                    }
+                  },
+                  500);
+              },
+              500);
+          },
+          500);
+      },
+      500);
+
+
+    //}
+
+  }
+
 }
