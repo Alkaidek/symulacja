@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import * as Chart from 'chart.js';
 
 @Component({
   selector: 'ram-sim-ram8',
@@ -7,7 +8,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SimRam8Component implements OnInit {
 
-
+  canvas: any;
+  ctx: any;
   constructor() { }
   i = 0
   a = [];
@@ -41,11 +43,13 @@ export class SimRam8Component implements OnInit {
   numberOfError = 0;
   numberOfCriticalError = 0;
   actualText = '';
-  simulationRun = true;
+  timeDelay = 10;
+  simIndex = 0;
+
   ngOnInit() {
   }
   f1() {
-    while (this.simulationIndex < 501 ) {
+    while (this.simulationIndex < 1001 ) {
       this.numberOfError = 0;
       if ( this.transferTime === 10 ) {
         this.probabilityValue = this.poissonRandomNumber(1200) + (this.simulationIndex / 5);
@@ -209,7 +213,7 @@ export class SimRam8Component implements OnInit {
         this.HammingArray[(this.errorIndex - 1)] = 1;
       }
       this.arrayTostring();
-      this.simulationText = this.simulationText + 'STATUS: HAMMING CODE HAS BEEN REPAIRED:' + this.codeTextHamming + ' \n';
+      this.simulationText = this.simulationText + 'STATUS: REPAIRDE CODE:' + this.codeTextHamming + ' \n';
       this.simulationHappeningArray[this.simulationHappeningArray.length] = 'REPAIRED';
       tmpTime = Math.floor(Math.random() * ((20) - 10 + 1)) + 10;
       this.transferTimeArray[this.transferTimeArray.length] = tmpTime;
@@ -328,7 +332,7 @@ export class SimRam8Component implements OnInit {
    // }, 600);
   }
   moveAll() {
-    //for (let i = 0;  i < this.simulationHappeningArray.length; i++) {
+    this.simIndex++;
     this.actualText = '';
     this.imagePath2 = 'p1.png';
     document.getElementById('simulationDot').style.marginLeft = 400 + 'px';
@@ -351,31 +355,151 @@ export class SimRam8Component implements OnInit {
                         if ( this.i < this.simulationHappeningArray.length ) {
                           this.moveAll();
                           }
-                        }, 500);
+                        }, 300);
                     } else {
                       this.imagePath2 = 'p4.png';
                       this.actualText = this.simulationHappeningArray[this.i];
                       this.i++;
-                      this.i++;
-                      this.i++;
                       setTimeout(() => {
-                        if ( this.i < this.simulationHappeningArray.length ) {
-                          this.moveAll();
-                        }
-                      }, 500);
+                          this.imagePath2 = 'p1.png';
+                          this.actualText = this.simulationHappeningArray[this.i];
+                          this.i++;
+                          setTimeout(() => {
+                            if ( this.simulationHappeningArray[this.i] === 'OK' ) {
+                              this.imagePath2 = 'p3.png';
+                              this.actualText = this.simulationHappeningArray[this.i];
+                              this.i++;
+                            } else {
+                              this.imagePath2 = 'p4.png';
+                              this.actualText = this.simulationHappeningArray[this.i];
+                              this.i++;
+                            }
+                              setTimeout(() => {
+                                if ( this.i < this.simulationHappeningArray.length ) {
+                                  this.moveAll();
+                                }
+                              }, this.transferTimeArray[this.i] * this.timeDelay );
+                            },
+                            this.transferTimeArray[this.i] * this.timeDelay);
+                        },
+                        this.transferTimeArray[this.i] * this.timeDelay);
                     }
                   },
-                  500);
+                  this.transferTimeArray[this.i] * this.timeDelay );
               },
-              500);
+              this.transferTimeArray[this.i] * this.timeDelay );
           },
-          500);
+          this.transferTimeArray[this.i] * this.timeDelay );
       },
-      500);
-
-
-    //}
-
+      this.transferTimeArray[this.i] * this.timeDelay );
   }
+  f2() {
+    this.canvas = document.getElementById('myChart');
+    this.ctx = this.canvas.getContext('2d');
+    const myChart = new Chart(this.ctx, {
+      type: 'pie',
+      data: {
+        labels: ['OK', 'ERROR'],
+        datasets: [{
+          label: '# of Votes',
+          data: [this.simulationIndex - this.errorAmount - 1, this.errorAmount],
+          backgroundColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: false,
+        display: true
+      }
+    });
+    this.canvas = document.getElementById('myChart2');
+    this.ctx = this.canvas.getContext('2d');
+    const myChart2 = new Chart(this.ctx, {
+      type: 'pie',
+      data: {
+        labels: ['ERROR', 'CRIT ERROR'],
+        datasets: [{
+          label: '# of Votes',
+          data: [this.errorAmount - this.numberOfCriticalError, this.numberOfCriticalError],
+          backgroundColor: [
+            'rgba(23, 255, 132, 1)',
+            'rgba(176, 6, 123, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: false,
+        display: true
+      }
+    });
 
+    const myChart4 = new Chart(document.getElementById('bar-chart2'), {
+      type: 'bar',
+      data: {
+        labels: ['Time Min', 'Time Max', 'Time AVG', 'Time Median'],
+        datasets: [
+          {
+            label: 'Time (millions)',
+            backgroundColor: ['#3e95cd', '#8e5ea2', 'rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+            data: [ this.getMin(this.transferTimeArray), this.getMax(this.transferTimeArray), this.getAvg(this.transferTimeArray), this.median(this.transferTimeArray)]
+          }
+        ]
+      },
+      options: {
+        legend: {display: false},
+        title: {
+          display: true,
+          text: 'Statistic of simulation time'
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              min: 0,
+            }
+          }]
+        }
+      }
+    });
+  }
+  getMax(array) {
+    let max = array[0];
+    for ( let i = 0; i < array.length; i++)  {
+      if ( max < array[i] ) {
+        max = array[i];
+      }
+    }
+    return max;
+  }
+  getMin(array) {
+    let min = array[0];
+    for ( let i = 0; i < array.length; i++)  {
+      if ( min > array[i] ) {
+        min = array[i];
+      }
+    }
+    return min;
+  }
+  getAvg(array) {
+    let avg = 0;
+    for ( let i = 0; i < array.length; i++)  {
+      avg = avg + array[i];
+      console.log(avg);
+    }
+    return avg / array.length;
+  }
+  median(values) {
+    values.sort(function(a , b) {
+      return a - b;
+    });
+    const half = Math.floor(values.length / 2);
+    if (values.length % 2) {
+      return values[half];
+    } else {
+      return (values[half - 1] + values[half]) / 2.0;
+    }
+  }
 }

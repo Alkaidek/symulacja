@@ -1,5 +1,9 @@
+
+
 p{
   white-space: pre-line;
+  font-family: 'Press Start 2P', cursive;
+
 }
 table, th, td, tr {
   border: 1px solid black;
@@ -10,6 +14,7 @@ table, th, td, tr {
 div{
   background-color: rgba(255,255,255,0.5);
   text-align: center;
+  font-family: 'Press Start 2P', cursive;
 }
 button {
   color: black;
@@ -20,6 +25,7 @@ button {
   text-decoration: none;
   display: inline-block;
   font-size: 12px;
+  font-family: 'Press Start 2P', cursive;
 }
 button:hover{
   background-color: #4CAF50;
@@ -30,6 +36,7 @@ input[type=text] {
   padding: 12px 20px;
   margin: 8px 0;
   box-sizing: border-box;
+  font-family: 'Press Start 2P', cursive;
 }
 .log{
   text-align: left;
@@ -39,9 +46,8 @@ input[type=text] {
 
 }
 .simulation{
-
   width:70%;
   float:left;
-
 }
+
 

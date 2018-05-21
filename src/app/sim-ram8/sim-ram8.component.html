@@ -1,13 +1,15 @@
 <div>
-  <p> {{ codeText }} </p>
+  <p> {{ simIndex }} </p>
 
   <button id="b1" (click)="f1()"><span>Hamming Code</span></button>
   <button id="b2" (click)="reset()"><span>Simulation Reset</span></button>
 
+    Time Delay: <input type="number" id="timedelay" [(ngModel)]="timeDelay" >
+
 
 </div>
 <div class="log">
-  <h1>Simulation Logs:</h1>
+  <h1>Simulation Logs: </h1>
   <p>{{ simulationText }}</p>
 </div>
 <div class="simulation">
@@ -21,5 +23,11 @@
   <button (click)="moveAll()">move</button>
 <br />
 <img src="../assets/images/{{imagePath}}">
+<br />
+  <button id="b3" (click)="f2()"><span>Chart</span></button>
+  <canvas id="myChart" width="700" height="400"></canvas>
+  <canvas id="myChart2" width="700" height="400"></canvas>
+
+  <canvas id="bar-chart2" width="700" height="450"></canvas>
 </div>
 
